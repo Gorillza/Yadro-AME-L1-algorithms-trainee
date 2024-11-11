@@ -89,10 +89,10 @@ int main() {
     outputFile16 << "SNR(dB) Errors Practical_BER" << std::endl;
     outputFile64 << "SNR(dB) Errors Practical_BER" << std::endl;
 
-    for (double snr_db = 0.0; snr_db <= 15.0; snr_db += 1.0) {
+    for (double EbNo = 0.0; EbNo <= 15.0; EbNo += 1.0) {
         // Создаем генератор белого гауссовского шума с заданным SNR
-        AWGNGenerator noiseGen16(snr_db, 67,16);
-        AWGNGenerator noiseGen64(snr_db, 67,64);
+        AWGNGenerator noiseGen16(EbNo, 67,16);
+        AWGNGenerator noiseGen64(EbNo, 67,64);
         //модулируем сигнал
         auto modulatedSignal_16 = mod16.modulate(inputBits);
         auto modulatedSignal_64 = mod64.modulate(inputBits);
@@ -110,12 +110,12 @@ int main() {
         auto [errors_64, ber_practical_64] = errorRateCalculation(inputBits, demodulatedSignal_64);
 
         // Записываем результаты в файл: SNR, количество ошибок, практическое BER, мощность сигнала, мощность шума
-        outputFile16 << snr_db << " " << errors_16 << " " << ber_practical_16
+        outputFile16 << EbNo << " " << errors_16 << " " << ber_practical_16
                    << " "  << std::endl;
-        outputFile64 << snr_db << " " << errors_64 << " " << ber_practical_64
+        outputFile64 << EbNo << " " << errors_64 << " " << ber_practical_64
                    << " "  << std::endl;
 
-        std::cout<<"snr_db: " << snr_db<< std::endl;
+        std::cout<<"EbNo: " << EbNo<< std::endl;
     }
 
     // Закрываем файл
