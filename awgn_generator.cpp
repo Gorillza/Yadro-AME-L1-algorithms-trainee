@@ -1,29 +1,18 @@
 #include "awgn_generator.h"
 #include <cmath>
 
-AWGNGenerator::AWGNGenerator(double snrDb, unsigned int seed) : snrDb(snrDb), generator(seed) {}
-
-double AWGNGenerator::calculateNoisePower(double signalPower) {
-    // Преобразуем SNR из дБ в линейную шкалу
-    double snrLinear = std::pow(10, snrDb / 10.0);
-    return signalPower / snrLinear;  // Мощность шума
-}
+AWGNGenerator::AWGNGenerator(double EbNo, unsigned int seed, double M) : EbNo(EbNo), generator(seed), M(std::log2(M)) {}
 
 std::vector<std::complex<double>> AWGNGenerator::addNoise(const std::vector<std::complex<double>>& signal) {
     std::vector<std::complex<double>> noisySignal = signal;
 
-    // Рассчитываем среднюю мощность сигнала
-    double signalPower = 0.0;
-    for (const auto& s : signal) {
-        signalPower += std::norm(s);  // Мощность сигнала — квадрат амплитуды
-    }
-    signalPower /= signal.size();  // Усредненная мощность сигнала
+    // Переводим отношение Eb/No (энергия бита к спектральной плотности шума) в SNR для символа
+    // M — количество бит на символ (например, в 8-QAM M=3 16-QAM M =4, так как 3 и 4 бита на символ (берется log2(M)))
+    double snrdb = EbNo + 10 * std::log10(M);
 
-    // Рассчитываем мощность шума
-    double noisePower = calculateNoisePower(signalPower);
-
-    // Генерируем белый гауссовский шум
-    std::normal_distribution<double> distribution(0.0, std::sqrt(noisePower));
+    // Генерируем белый гауссовский шум с нулевым средним и рассчитанным стандартным отклонением
+    // Преобразуем snrdb в линейную шкалу и делим на 2, чтобы учесть реальную и мнимую компоненты (скалируем)
+    std::normal_distribution<double> distribution(0.0, std::sqrt(1 / (2 * std::pow(10, snrdb / 10))));//noisePower));
 
     for (auto& s : noisySignal) {
         double noiseReal = distribution(generator);

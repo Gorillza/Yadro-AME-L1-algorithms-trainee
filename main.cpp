@@ -89,16 +89,17 @@ int main() {
     outputFile16 << "SNR(dB) Errors Practical_BER" << std::endl;
     outputFile64 << "SNR(dB) Errors Practical_BER" << std::endl;
 
-    for (double snr_db = 0.0; snr_db <= 16.0; snr_db += 1.0) {
+    for (double snr_db = 0.0; snr_db <= 15.0; snr_db += 1.0) {
         // Создаем генератор белого гауссовского шума с заданным SNR
-        AWGNGenerator noiseGen(snr_db, 67);
+        AWGNGenerator noiseGen16(snr_db, 67,16);
+        AWGNGenerator noiseGen64(snr_db, 67,64);
         //модулируем сигнал
         auto modulatedSignal_16 = mod16.modulate(inputBits);
         auto modulatedSignal_64 = mod64.modulate(inputBits);
 
         // Добавляем шум к модулированному сигналу
-        auto noisySignal_16 = noiseGen.addNoise(modulatedSignal_16);
-        auto noisySignal_64 = noiseGen.addNoise(modulatedSignal_64);
+        auto noisySignal_16 = noiseGen16.addNoise(modulatedSignal_16);
+        auto noisySignal_64 = noiseGen64.addNoise(modulatedSignal_64);
 
         // Демодулируем сигнал
         auto demodulatedSignal_16 = demod16.demodulate(noisySignal_16);

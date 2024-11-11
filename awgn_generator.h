@@ -8,15 +8,15 @@
 class AWGNGenerator {
 public:
     // Конструктор, принимающий SNR и начальное значение для генератора случайных чисел
-    AWGNGenerator(double snrDb, unsigned int seed);
+    AWGNGenerator(double EbNo, unsigned int seed , double M);
 
     // Метод добавления шума к входному сигналу
     std::vector<std::complex<double>> addNoise(const std::vector<std::complex<double>>& signal);
 
 private:
-    double snrDb;  // SNR в дБ
+    double EbNo;  // SNR в дБ
+    double M; //какой тип модуляции 16 или 64 и берется логарифм чтобы узнать количество бит
     std::default_random_engine generator;  // Генератор случайных чисел
-    double calculateNoisePower(double signalPower);  // Расчет мощности шума
 };
 
 #endif // AWGN_GENERATOR_H
